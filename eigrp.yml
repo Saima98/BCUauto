@@ -1,0 +1,37 @@
+- name: Configure EIGRP between R1 and R2
+  hosts: routers
+  gather_facts: no
+  
+  tasks:
+    - name: Configure R1 interface connecting to R2
+      ios_config:
+        lines:
+          - 'interface GigabitEthernet0/0'
+          - 'ip address 192.168.1.1 255.255.255.252'
+          - 'no shutdown'
+          - 'exit'
+          - 'router eigrp 100'
+          - 'network 192.168.2.0 0.0.0.3'
+        parents: interface GigabitEthernet0/0
+      register: config_result
+    
+    - name: Configure R2 interface connecting to R1
+      ios_config:
+        lines:
+          - 'interface GigabitEthernet0/0'
+          - 'ip address 192.168.3.1 255.255.255.252'
+          - 'no shutdown'
+          - 'exit'
+          - 'router eigrp 100'
+          - 'network 192.168.2.0 0.0.0.3'
+        parents: interface GigabitEthernet0/0
+      register: config_result
+      
+    - name: Save running-config to startup-config
+      ios_command:
+        commands:
+          - 'write memory'
+          
+    - name: Print configuration results
+      debug:
+        var: config_result

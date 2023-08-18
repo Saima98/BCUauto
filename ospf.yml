@@ -1,0 +1,27 @@
+- name: Configure OSPF between R2 and R3
+  hosts: routers
+  gather_facts: no
+  tasks:
+    - name: Configure OSPF on R2
+      ios_config:
+        lines:
+          - router ospf 1
+          - network 192.168.4.0 0.0.0.3 area 0
+        parents: interface GigabitEthernet0/1
+      when: inventory_hostname == 'R2'
+      register: ospf_config_R2
+
+    - name: Configure OSPF on R3
+      ios_config:
+        lines:
+          - router ospf 1
+          - network 192.168.4.0 0.0.0.3 area 0
+        parents: interface GigabitEthernet0/0
+      when: inventory_hostname == 'R3'
+      register: ospf_config_R3
+
+    - name: Save running configuration
+      ios_command:
+        commands:
+          - copy running-config startup-config
+      when: ospf_config_R2.changed or ospf_config_R3.changed
