@@ -7,7 +7,6 @@ import pandas as pd
 from suzieq.sqobjects import get_sqobject
 from rich.console import Console
 
-
 console = Console(color_system="truecolor")
 
 # OSPF Testing (need to research)
@@ -42,3 +41,4 @@ if bgp_fail == 0:
 #     )
 # if bgp_fail or ospf_fail != 0:
 #     sys.exit(1)
+#
